@@ -1,0 +1,131 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#                         HEIMDALL - Guardian of Bifrost
+#                         Caddy Reverse Proxy Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# All SSL termination is handled by Cloudflare.
+# Heimdall routes incoming HTTP traffic to the appropriate container.
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+{
+    # Global options
+    admin off
+    auto_https off
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Kanban Board - Project Management (WebSocket enabled)
+# ─────────────────────────────────────────────────────────────────────────────
+kanban.exe.pm {
+    reverse_proxy yggdrasil-kanban:3000
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Calify - Calendar Feed Transformation
+# ─────────────────────────────────────────────────────────────────────────────
+calify.it {
+    reverse_proxy yggdrasil-calify:3000
+}
+
+www.calify.it {
+    redir https://calify.it{uri} permanent
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Grablist - Smart Shopping List PWA (WebSocket enabled)
+# ─────────────────────────────────────────────────────────────────────────────
+grablist.org {
+    reverse_proxy yggdrasil-grablist:3000
+}
+
+www.grablist.org {
+    redir https://grablist.org{uri} permanent
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CoS - Chief of Staff Platform
+# ─────────────────────────────────────────────────────────────────────────────
+cos.exe.pm {
+    reverse_proxy yggdrasil-cos:3000
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Night Tales - AI Bedtime Story Generator
+# ─────────────────────────────────────────────────────────────────────────────
+nighttales.cloud {
+    reverse_proxy yggdrasil-nighttales:3000
+}
+
+www.nighttales.cloud {
+    redir https://nighttales.cloud{uri} permanent
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Playwright - E2E Test Dashboard
+# ─────────────────────────────────────────────────────────────────────────────
+playwright.exe.pm {
+    reverse_proxy yggdrasil-playwright:3000
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Schmidt Larsen - Professional Bio Site
+# ─────────────────────────────────────────────────────────────────────────────
+schmidtlarsen.dk {
+    reverse_proxy yggdrasil-schmidtlarsen:3000
+}
+
+www.schmidtlarsen.dk {
+    redir https://schmidtlarsen.dk{uri} permanent
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Sorring 3D - 3D Print Service (WebSocket + File Uploads)
+# ─────────────────────────────────────────────────────────────────────────────
+sorring3d.dk {
+    reverse_proxy yggdrasil-sorring3d:3000
+}
+
+www.sorring3d.dk {
+    redir https://sorring3d.dk{uri} permanent
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Sorring Udlejning - Tool Rental Platform (File Uploads)
+# ─────────────────────────────────────────────────────────────────────────────
+sorringudlejning.dk {
+    reverse_proxy yggdrasil-sorring-udlejning:3000
+}
+
+www.sorringudlejning.dk {
+    redir https://sorringudlejning.dk{uri} permanent
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WODForge - CrossFit Workout Generator
+# ─────────────────────────────────────────────────────────────────────────────
+wodforge.exe.pm {
+    reverse_proxy yggdrasil-wodforge:3000
+}
+
+wodforge.dk {
+    reverse_proxy yggdrasil-wodforge:3000
+}
+
+www.wodforge.dk {
+    redir https://wodforge.dk{uri} permanent
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WebSocket Hub - Real-Time Infrastructure
+# ─────────────────────────────────────────────────────────────────────────────
+websocket.exe.pm {
+    reverse_proxy yggdrasil-websocket-hub:3098
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Mimir - AI Agent Orchestration (direct access)
+# ─────────────────────────────────────────────────────────────────────────────
+mimir.exe.pm {
+    reverse_proxy yggdrasil-mimir:3000
+}

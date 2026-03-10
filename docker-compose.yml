@@ -1,0 +1,431 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#                              YGGDRASIL - The World Tree
+#                         Unified Self-Hosted Platform Stack
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Norse mythology: Yggdrasil is the immense cosmic tree that connects the nine
+# worlds, serving as the center of the universe in Norse cosmology.
+#
+# This stack unifies all platform services under one deployment:
+# - Heimdall (Caddy) - Gateway/Reverse Proxy
+# - Urd (PostgreSQL) - Database
+# - Mimir - AI Agent Orchestration
+# - 11 Application Services
+#
+# Managed via Portainer on Unraid (192.168.0.20)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+networks:
+  bifrost:
+    name: bifrost
+    driver: bridge
+
+volumes:
+  # Infrastructure
+  urd-data:
+    name: yggdrasil-urd-data
+  pgadmin-data:
+    name: yggdrasil-pgadmin-data
+  caddy-data:
+    name: yggdrasil-caddy-data
+  caddy-config:
+    name: yggdrasil-caddy-config
+
+  # File uploads
+  sorring3d-uploads:
+    name: yggdrasil-sorring3d-uploads
+  sorring-udlejning-uploads:
+    name: yggdrasil-sorring-udlejning-uploads
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # HEIMDALL - Caddy Reverse Proxy (Guardian of Bifrost)
+  # ─────────────────────────────────────────────────────────────────────────────
+  heimdall:
+    image: caddy:2-alpine
+    container_name: yggdrasil-heimdall
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /mnt/user/websites/yggdrasil/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # URD - PostgreSQL 17 Database (Well of Fate)
+  # ─────────────────────────────────────────────────────────────────────────────
+  urd:
+    image: postgres:17-alpine
+    container_name: yggdrasil-urd
+    restart: unless-stopped
+    ports:
+      - "5439:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-urd}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    volumes:
+      - urd-data:/var/lib/postgresql/data
+      - /mnt/user/websites/yggdrasil/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-urd} -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=1GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=128MB"
+    networks:
+      - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PGADMIN - Database Administration
+  # ─────────────────────────────────────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: yggdrasil-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5480:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@exe.pm}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - urd
+    networks:
+      - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # MIMIR - AI Agent Orchestration (The Wise One)
+  # ─────────────────────────────────────────────────────────────────────────────
+  mimir:
+    build:
+      context: /mnt/user/websites/mimir
+      dockerfile: backend/Dockerfile
+    container_name: yggdrasil-mimir
+    restart: unless-stopped
+    ports:
+      - "793:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/mimir_db?sslmode=disable
+      CLAUDE_CONFIG_DIR: /config/home/.claude
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN}
+      ENCRYPTION_SECRET: ${MIMIR_ENCRYPTION_SECRET:-mimir-default-encryption-secret}
+      INTERNAL_API_TOKEN: ${MIMIR_INTERNAL_API_TOKEN:-mimir-internal-token}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+    volumes:
+      - /mnt/user/websites:/data/websites:rw
+      - /mnt/user/appdata/claude:/config/home/.claude:ro
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # APPLICATION SERVICES
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  # Kanban Board - Project Management
+  kanban:
+    build:
+      context: /mnt/user/websites/kanban
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-kanban
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/kanban_db?sslmode=disable
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # Calify - Calendar Feed Transformation
+  calify:
+    build:
+      context: /mnt/user/websites/calify
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-calify
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/calify_db?sslmode=disable
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # Grablist - Smart Shopping List PWA
+  grablist:
+    build:
+      context: /mnt/user/websites/grablist
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-grablist
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/grablist_db?sslmode=disable
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      WEBSOCKET_HUB_URL: http://websocket-hub:3098
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # CoS - Chief of Staff Platform
+  cos:
+    build:
+      context: /mnt/user/websites/cos
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-cos
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/cos_db?sslmode=disable
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # Night Tales - AI Bedtime Story Generator
+  nighttales:
+    build:
+      context: /mnt/user/websites/nighttales
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-nighttales
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/nighttales_db?sslmode=disable
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # Playwright - E2E Test Dashboard
+  playwright:
+    build:
+      context: /mnt/user/websites/playwright
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-playwright
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/playwright_db?sslmode=disable
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # Schmidt Larsen - Professional Bio Site
+  schmidtlarsen:
+    build:
+      context: /mnt/user/websites/schmidtlarsen
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-schmidtlarsen
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/schmidtlarsen_db?sslmode=disable
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # Sorring 3D - 3D Print Service
+  sorring3d:
+    build:
+      context: /mnt/user/websites/sorring3d
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-sorring3d
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/sorring3d_db?sslmode=disable
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - sorring3d-uploads:/app/uploads
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # Sorring Udlejning - Tool Rental Platform
+  sorring-udlejning:
+    build:
+      context: /mnt/user/websites/sorring-udlejning
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-sorring-udlejning
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/sorring_udlejning_db?sslmode=disable
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - sorring-udlejning-uploads:/app/uploads
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # WODForge - CrossFit Workout Generator
+  wodforge:
+    build:
+      context: /mnt/user/websites/wodforge
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-wodforge
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/wodforge_db?sslmode=disable
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+
+  # WebSocket Hub - Real-Time Infrastructure
+  websocket-hub:
+    build:
+      context: /mnt/user/websites/websocket-hub
+      dockerfile: Dockerfile.yggdrasil
+    container_name: yggdrasil-websocket-hub
+    restart: unless-stopped
+    environment:
+      PORT: 3098
+      WEBSOCKET_KEY: ${WEBSOCKET_KEY}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3098/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - bifrost
