@@ -28,6 +28,7 @@ Internet → Cloudflare Tunnel → App:Port → Urd:5432
 | Kanban | yggdrasil-kanban | 6101 | kanban.exe.pm |
 | Playwright | yggdrasil-playwright | 6102 | playwright.exe.pm |
 | Mimir | yggdrasil-mimir | 6103 | mimir.exe.pm |
+| pgAdmin | yggdrasil-pgadmin | 6104 | - |
 
 **External sites (62xx):**
 | Service | Container | Port | Domain |
@@ -43,7 +44,6 @@ Internet → Cloudflare Tunnel → App:Port → Urd:5432
 | Service | Container | Port | Notes |
 |---------|-----------|------|-------|
 | Urd (PostgreSQL) | yggdrasil-urd | 5439 | Database |
-| pgAdmin | yggdrasil-pgadmin | 5480 | DB admin UI |
 
 ## Database Access
 

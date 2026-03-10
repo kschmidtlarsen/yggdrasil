@@ -82,7 +82,7 @@ services:
     container_name: yggdrasil-pgadmin
     restart: unless-stopped
     ports:
-      - "5480:80"
+      - "6104:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@exe.pm}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
