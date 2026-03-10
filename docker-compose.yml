@@ -98,14 +98,14 @@ services:
 
   # ─────────────────────────────────────────────────────────────────────────────
   # MIMIR - AI Agent Orchestration (The Wise One)
-  # Port: 793
+  # Port: 6103
   # ─────────────────────────────────────────────────────────────────────────────
   mimir:
     image: ghcr.io/kschmidtlarsen/mimir:latest
     container_name: yggdrasil-mimir
     restart: unless-stopped
     ports:
-      - "793:3000"
+      - "6103:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -138,13 +138,13 @@ services:
   # ─────────────────────────────────────────────────────────────────────────────
 
   # Kanban Board - Project Management
-  # Port: 3001
+  # Port: 6101
   kanban:
     image: ghcr.io/kschmidtlarsen/kanban:latest
     container_name: yggdrasil-kanban
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - "6101:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -164,13 +164,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # Calify - Calendar Feed Transformation
-  # Port: 3002
+  # Port: 6201
   calify:
     image: ghcr.io/kschmidtlarsen/calify:latest
     container_name: yggdrasil-calify
     restart: unless-stopped
     ports:
-      - "3002:3000"
+      - "6201:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -194,13 +194,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # Grablist - Smart Shopping List PWA
-  # Port: 3003
+  # Port: 6205
   grablist:
     image: ghcr.io/kschmidtlarsen/grablist:latest
     container_name: yggdrasil-grablist
     restart: unless-stopped
     ports:
-      - "3003:3000"
+      - "6205:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -222,13 +222,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # Night Tales - AI Bedtime Story Generator
-  # Port: 3004
+  # Port: 6206
   nighttales:
     image: ghcr.io/kschmidtlarsen/nighttales:latest
     container_name: yggdrasil-nighttales
     restart: unless-stopped
     ports:
-      - "3004:3000"
+      - "6206:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -251,13 +251,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # Playwright - E2E Test Dashboard
-  # Port: 3005
+  # Port: 6102
   playwright:
     image: ghcr.io/kschmidtlarsen/playwright:latest
     container_name: yggdrasil-playwright
     restart: unless-stopped
     ports:
-      - "3005:3000"
+      - "6102:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -277,13 +277,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # Sorring 3D - 3D Print Service
-  # Port: 3006
+  # Port: 6203
   sorring3d:
     image: ghcr.io/kschmidtlarsen/sorring3d:latest
     container_name: yggdrasil-sorring3d
     restart: unless-stopped
     ports:
-      - "3006:3000"
+      - "6203:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -308,13 +308,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # Sorring Udlejning - Tool Rental Platform
-  # Port: 3007
+  # Port: 6204
   sorring-udlejning:
     image: ghcr.io/kschmidtlarsen/sorring-udlejning:latest
     container_name: yggdrasil-sorring-udlejning
     restart: unless-stopped
     ports:
-      - "3007:3000"
+      - "6204:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -338,13 +338,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # WODForge - CrossFit Workout Generator
-  # Port: 3008
+  # Port: 6202
   wodforge:
     image: ghcr.io/kschmidtlarsen/wodforge:latest
     container_name: yggdrasil-wodforge
     restart: unless-stopped
     ports:
-      - "3008:3000"
+      - "6202:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
