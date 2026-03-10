@@ -49,7 +49,7 @@ services:
       - "9080:80"
       - "9443:443"
     volumes:
-      - ./caddy:/etc/caddy:ro
+      - /mnt/user/websites/yggdrasil/caddy:/etc/caddy:ro
       - caddy-data:/data
       - caddy-config:/config
     networks:
