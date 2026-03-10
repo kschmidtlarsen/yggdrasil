@@ -1,0 +1,27 @@
+[submodule "apps/kanban"]
+	path = apps/kanban
+	url = https://github.com/kschmidtlarsen/kanban.git
+[submodule "apps/calify"]
+	path = apps/calify
+	url = https://github.com/kschmidtlarsen/calify.git
+[submodule "apps/grablist"]
+	path = apps/grablist
+	url = https://github.com/kschmidtlarsen/grablist.git
+[submodule "apps/nighttales"]
+	path = apps/nighttales
+	url = https://github.com/kschmidtlarsen/nighttales.git
+[submodule "apps/playwright"]
+	path = apps/playwright
+	url = https://github.com/kschmidtlarsen/playwright.git
+[submodule "apps/sorring3d"]
+	path = apps/sorring3d
+	url = https://github.com/kschmidtlarsen/sorring3d.git
+[submodule "apps/sorring-udlejning"]
+	path = apps/sorring-udlejning
+	url = https://github.com/kschmidtlarsen/sorring-udlejning.git
+[submodule "apps/wodforge"]
+	path = apps/wodforge
+	url = https://github.com/kschmidtlarsen/wodforge.git
+[submodule "apps/mimir"]
+	path = apps/mimir
+	url = https://github.com/kschmidtlarsen/mimir.git

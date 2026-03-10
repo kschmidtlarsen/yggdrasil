@@ -44,13 +44,6 @@ www.grablist.org {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CoS - Chief of Staff Platform
-# ─────────────────────────────────────────────────────────────────────────────
-cos.exe.pm {
-    reverse_proxy yggdrasil-cos:3000
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Night Tales - AI Bedtime Story Generator
 # ─────────────────────────────────────────────────────────────────────────────
 nighttales.cloud {
@@ -66,17 +59,6 @@ www.nighttales.cloud {
 # ─────────────────────────────────────────────────────────────────────────────
 playwright.exe.pm {
     reverse_proxy yggdrasil-playwright:3000
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Schmidt Larsen - Professional Bio Site
-# ─────────────────────────────────────────────────────────────────────────────
-schmidtlarsen.dk {
-    reverse_proxy yggdrasil-schmidtlarsen:3000
-}
-
-www.schmidtlarsen.dk {
-    redir https://schmidtlarsen.dk{uri} permanent
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -114,13 +96,6 @@ wodforge.dk {
 
 www.wodforge.dk {
     redir https://wodforge.dk{uri} permanent
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
-# WebSocket Hub - Real-Time Infrastructure
-# ─────────────────────────────────────────────────────────────────────────────
-websocket.exe.pm {
-    reverse_proxy yggdrasil-websocket-hub:3098
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -10,7 +10,7 @@
 # - Heimdall (Caddy) - Gateway/Reverse Proxy
 # - Urd (PostgreSQL) - Database
 # - Mimir - AI Agent Orchestration
-# - 11 Application Services
+# - Application Services (via Git submodules)
 #
 # Managed via Portainer on Unraid (192.168.0.20)
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -49,7 +49,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /mnt/user/websites/yggdrasil/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
     networks:
@@ -73,7 +73,7 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
     volumes:
       - urd-data:/var/lib/postgresql/data
-      - /mnt/user/websites/yggdrasil/init:/docker-entrypoint-initdb.d:ro
+      - ./init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-urd} -d postgres"]
       interval: 10s
@@ -124,7 +124,7 @@ services:
   # ─────────────────────────────────────────────────────────────────────────────
   mimir:
     build:
-      context: /mnt/user/websites/mimir
+      context: ./apps/mimir
       dockerfile: backend/Dockerfile
     container_name: yggdrasil-mimir
     restart: unless-stopped
@@ -157,13 +157,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # APPLICATION SERVICES
+  # APPLICATION SERVICES (via Git submodules in ./apps/)
   # ─────────────────────────────────────────────────────────────────────────────
 
   # Kanban Board - Project Management
   kanban:
     build:
-      context: /mnt/user/websites/kanban
+      context: ./apps/kanban
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-kanban
     restart: unless-stopped
@@ -186,7 +186,7 @@ services:
   # Calify - Calendar Feed Transformation
   calify:
     build:
-      context: /mnt/user/websites/calify
+      context: ./apps/calify
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-calify
     restart: unless-stopped
@@ -213,7 +213,7 @@ services:
   # Grablist - Smart Shopping List PWA
   grablist:
     build:
-      context: /mnt/user/websites/grablist
+      context: ./apps/grablist
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-grablist
     restart: unless-stopped
@@ -223,30 +223,6 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/grablist_db?sslmode=disable
       RESEND_API_KEY: ${RESEND_API_KEY}
       JWT_SECRET: ${JWT_SECRET}
-      WEBSOCKET_HUB_URL: http://websocket-hub:3098
-    depends_on:
-      urd:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - bifrost
-
-  # CoS - Chief of Staff Platform
-  cos:
-    build:
-      context: /mnt/user/websites/cos
-      dockerfile: Dockerfile.yggdrasil
-    container_name: yggdrasil-cos
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/cos_db?sslmode=disable
     depends_on:
       urd:
         condition: service_healthy
@@ -262,7 +238,7 @@ services:
   # Night Tales - AI Bedtime Story Generator
   nighttales:
     build:
-      context: /mnt/user/websites/nighttales
+      context: ./apps/nighttales
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-nighttales
     restart: unless-stopped
@@ -288,7 +264,7 @@ services:
   # Playwright - E2E Test Dashboard
   playwright:
     build:
-      context: /mnt/user/websites/playwright
+      context: ./apps/playwright
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-playwright
     restart: unless-stopped
@@ -308,33 +284,10 @@ services:
     networks:
       - bifrost
 
-  # Schmidt Larsen - Professional Bio Site
-  schmidtlarsen:
-    build:
-      context: /mnt/user/websites/schmidtlarsen
-      dockerfile: Dockerfile.yggdrasil
-    container_name: yggdrasil-schmidtlarsen
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/schmidtlarsen_db?sslmode=disable
-    depends_on:
-      urd:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - bifrost
-
   # Sorring 3D - 3D Print Service
   sorring3d:
     build:
-      context: /mnt/user/websites/sorring3d
+      context: ./apps/sorring3d
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-sorring3d
     restart: unless-stopped
@@ -362,7 +315,7 @@ services:
   # Sorring Udlejning - Tool Rental Platform
   sorring-udlejning:
     build:
-      context: /mnt/user/websites/sorring-udlejning
+      context: ./apps/sorring-udlejning
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-sorring-udlejning
     restart: unless-stopped
@@ -389,7 +342,7 @@ services:
   # WODForge - CrossFit Workout Generator
   wodforge:
     build:
-      context: /mnt/user/websites/wodforge
+      context: ./apps/wodforge
       dockerfile: Dockerfile.yggdrasil
     container_name: yggdrasil-wodforge
     restart: unless-stopped
@@ -408,24 +361,5 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-    networks:
-      - bifrost
-
-  # WebSocket Hub - Real-Time Infrastructure
-  websocket-hub:
-    build:
-      context: /mnt/user/websites/websocket-hub
-      dockerfile: Dockerfile.yggdrasil
-    container_name: yggdrasil-websocket-hub
-    restart: unless-stopped
-    environment:
-      PORT: 3098
-      WEBSOCKET_KEY: ${WEBSOCKET_KEY}
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3098/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     networks:
       - bifrost
