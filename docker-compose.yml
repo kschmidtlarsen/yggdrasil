@@ -10,7 +10,7 @@
 # - Heimdall (Caddy) - Gateway/Reverse Proxy
 # - Urd (PostgreSQL) - Database
 # - Mimir - AI Agent Orchestration
-# - Application Services (via Git submodules)
+# - Application Services (pre-built images from ghcr.io)
 #
 # Managed via Portainer on Unraid (192.168.0.20)
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -123,9 +123,7 @@ services:
   # MIMIR - AI Agent Orchestration (The Wise One)
   # ─────────────────────────────────────────────────────────────────────────────
   mimir:
-    build:
-      context: ./apps/mimir
-      dockerfile: backend/Dockerfile
+    image: ghcr.io/kschmidtlarsen/mimir:latest
     container_name: yggdrasil-mimir
     restart: unless-stopped
     ports:
@@ -157,14 +155,12 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # APPLICATION SERVICES (via Git submodules in ./apps/)
+  # APPLICATION SERVICES (pre-built images from ghcr.io)
   # ─────────────────────────────────────────────────────────────────────────────
 
   # Kanban Board - Project Management
   kanban:
-    build:
-      context: ./apps/kanban
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/kanban:latest
     container_name: yggdrasil-kanban
     restart: unless-stopped
     environment:
@@ -182,12 +178,12 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # Calify - Calendar Feed Transformation
   calify:
-    build:
-      context: ./apps/calify
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/calify:latest
     container_name: yggdrasil-calify
     restart: unless-stopped
     environment:
@@ -209,12 +205,12 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # Grablist - Smart Shopping List PWA
   grablist:
-    build:
-      context: ./apps/grablist
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/grablist:latest
     container_name: yggdrasil-grablist
     restart: unless-stopped
     environment:
@@ -234,12 +230,12 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # Night Tales - AI Bedtime Story Generator
   nighttales:
-    build:
-      context: ./apps/nighttales
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/nighttales:latest
     container_name: yggdrasil-nighttales
     restart: unless-stopped
     environment:
@@ -260,12 +256,12 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # Playwright - E2E Test Dashboard
   playwright:
-    build:
-      context: ./apps/playwright
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/playwright:latest
     container_name: yggdrasil-playwright
     restart: unless-stopped
     environment:
@@ -283,12 +279,12 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # Sorring 3D - 3D Print Service
   sorring3d:
-    build:
-      context: ./apps/sorring3d
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/sorring3d:latest
     container_name: yggdrasil-sorring3d
     restart: unless-stopped
     environment:
@@ -311,12 +307,12 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # Sorring Udlejning - Tool Rental Platform
   sorring-udlejning:
-    build:
-      context: ./apps/sorring-udlejning
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/sorring-udlejning:latest
     container_name: yggdrasil-sorring-udlejning
     restart: unless-stopped
     environment:
@@ -338,12 +334,12 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # WODForge - CrossFit Workout Generator
   wodforge:
-    build:
-      context: ./apps/wodforge
-      dockerfile: Dockerfile.yggdrasil
+    image: ghcr.io/kschmidtlarsen/wodforge:latest
     container_name: yggdrasil-wodforge
     restart: unless-stopped
     environment:
@@ -363,3 +359,5 @@ services:
       start_period: 30s
     networks:
       - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
