@@ -29,6 +29,7 @@ Internet → Cloudflare Tunnel → App:Port → Urd:5432
 | Playwright | yggdrasil-playwright | 6102 | playwright.exe.pm |
 | Mimir | yggdrasil-mimir | 6103 | mimir.exe.pm |
 | pgAdmin | yggdrasil-pgadmin | 6104 | - |
+| Umami | yggdrasil-umami | 6105 | umami.exe.pm |
 
 **External sites (62xx):**
 | Service | Container | Port | Domain |

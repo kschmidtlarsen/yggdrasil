@@ -365,3 +365,30 @@ services:
       - bifrost
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+
+  # Umami - Web Analytics (Google Analytics alternative)
+  # Port: 6105
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: yggdrasil-umami
+    restart: unless-stopped
+    ports:
+      - "6105:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/umami_db
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${UMAMI_APP_SECRET:-umami-secret-change-me}
+      DISABLE_UPDATES: "true"
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
