@@ -366,6 +366,33 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
+  # CoS (Chief of Staff) - Executive Assistant
+  # Port: 6106
+  cos:
+    image: ghcr.io/kschmidtlarsen/chiefofstaff:latest
+    container_name: yggdrasil-cos
+    restart: unless-stopped
+    ports:
+      - "6106:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/cos_db?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      urd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
   # Umami - Web Analytics (Google Analytics alternative)
   # Port: 6105
   umami:

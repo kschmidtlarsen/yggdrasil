@@ -30,6 +30,7 @@ Internet → Cloudflare Tunnel → App:Port → Urd:5432
 | Mimir | yggdrasil-mimir | 6103 | mimir.exe.pm |
 | pgAdmin | yggdrasil-pgadmin | 6104 | - |
 | Umami | yggdrasil-umami | 6105 | umami.exe.pm |
+| CoS | yggdrasil-cos | 6106 | cos.exe.pm |
 
 **External sites (62xx):**
 | Service | Container | Port | Domain |
@@ -56,7 +57,8 @@ postgresql://urd:<password>@urd:5432/<database>_db
 Databases:
 - kanban_db, calify_db, grablist_db
 - nighttales_db, playwright_db
-- sorring3d_db, sorring_udlejning_db, wodforge_db, mimir_db
+- sorring3d_db, sorring_udlejning_db, wodforge_db
+- mimir_db, umami_db, cos_db
 
 ## Deployment
 
