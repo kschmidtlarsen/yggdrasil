@@ -419,3 +419,37 @@ services:
       - bifrost
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # WATCHTOWER - Automatic Container Updates & Image Cleanup
+  # ─────────────────────────────────────────────────────────────────────────────
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: yggdrasil-watchtower
+    restart: unless-stopped
+    environment:
+      # Only update containers with the watchtower.enable=true label
+      WATCHTOWER_LABEL_ENABLE: "true"
+      # Remove old images after updating (prevents orphaned images)
+      WATCHTOWER_CLEANUP: "true"
+      # Check for updates every 5 minutes (300 seconds)
+      WATCHTOWER_POLL_INTERVAL: 300
+      # Include stopped containers
+      WATCHTOWER_INCLUDE_STOPPED: "true"
+      # Revive stopped containers after update
+      WATCHTOWER_REVIVE_STOPPED: "true"
+      # Rolling restarts (one container at a time)
+      WATCHTOWER_ROLLING_RESTART: "true"
+      # Log level
+      WATCHTOWER_DEBUG: "false"
+      # Notification (optional - can add Slack/email later)
+      # WATCHTOWER_NOTIFICATIONS: "slack"
+      # WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL: "${SLACK_WEBHOOK_URL}"
+    volumes:
+      # Docker socket for container management
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Docker config for ghcr.io authentication
+      - /root/.docker/config.json:/config.json:ro
+    command: --interval 300 --cleanup --label-enable
+    networks:
+      - bifrost
