@@ -99,3 +99,63 @@ curl https://kanban.exe.pm/api/health
 ## Environment Variables
 
 All secrets managed in Portainer stack environment. See `.env.example` for required variables.
+
+## CI/CD Pipeline
+
+```
+Code Push → GitHub Actions → Build Docker Image → Push to ghcr.io → Portainer Pull → Deploy
+```
+
+**GitHub Actions Workflow:** Each app has `.github/workflows/docker.yml` that:
+1. Builds from `Dockerfile.yggdrasil`
+2. Pushes to `ghcr.io/kschmidtlarsen/<app>:latest`
+3. Triggers on push to main
+
+**Check build status:**
+```bash
+gh run list --repo kschmidtlarsen/<app> --limit 1
+```
+
+## Cloudflare Access
+
+Internal tools (.exe.pm domains) are protected by Cloudflare Access:
+- kanban.exe.pm
+- playwright.exe.pm
+- mimir.exe.pm
+- umami.exe.pm
+- cos.exe.pm
+- wodforge.exe.pm
+
+Public sites (no Access):
+- calify.it
+- sorring3d.dk
+- sorringudlejning.dk
+- grablist.org
+- nighttales.cloud
+
+## Troubleshooting
+
+**Container not starting:**
+```bash
+# Check container logs in Portainer or via API
+curl http://192.168.0.20:<port>/api/health
+```
+
+**Frontend shows "Not Found":**
+- Ensure container has latest image (force pull in Portainer)
+- Check `frontendPath` in server.js uses production path
+
+**502 Bad Gateway via Cloudflare:**
+- Container is down or not responding
+- Check Cloudflare Tunnel points to `http://192.168.0.20:<port>`
+
+**Database connection issues:**
+- Verify database exists in Urd
+- Check DATABASE_URL in Portainer environment
+
+## CLI Tools
+
+Available on the development machine:
+- `gh` - GitHub CLI (repos, actions, PRs)
+- `psql` - PostgreSQL client
+- `curl` - HTTP requests
