@@ -315,6 +315,28 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
+  # Schmidt Larsen - Professional Personal Website
+  # Port: 6207
+  schmidt-larsen:
+    image: ghcr.io/kschmidtlarsen/schmidt-larsen:latest
+    container_name: yggdrasil-schmidt-larsen
+    restart: unless-stopped
+    ports:
+      - "6207:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - bifrost
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
   # Playwright - E2E Test Dashboard
   # Port: 6102
   playwright:

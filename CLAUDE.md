@@ -87,6 +87,7 @@ Yggdrasil is the unified Docker stack that hosts all platform services on the Un
 | Sorring Udlejning | yggdrasil-sorring-udlejning | 6204 | sorringudlejning.dk |
 | Grablist | yggdrasil-grablist | 6205 | grablist.org |
 | Night Tales | yggdrasil-nighttales | 6206 | nighttales.cloud |
+| Schmidt Larsen | yggdrasil-schmidt-larsen | 6207 | schmidtlarsen.dk |
 
 **Infrastructure:**
 | Service | Container | Port | Notes |
