@@ -181,8 +181,9 @@ services:
       URD_HOST: urd
       URD_PORT: 5432
       BACKUP_SCHEDULE: "0 3,15 * * *"
+      BACKUP_CAP_GB: 100
     volumes:
-      - /mnt/user/appdata/claude/.env:/app/.env:ro
+      - /mnt/user/appdata/claude/.env:/config/.env:ro
       - /mnt/user/backup/websites:/backups
       - sorring3d-uploads:/volumes/sorring3d:ro
       - sorring-udlejning-uploads:/volumes/sorring-udlejning:ro
