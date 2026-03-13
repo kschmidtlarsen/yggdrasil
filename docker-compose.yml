@@ -116,6 +116,10 @@ services:
       MIMIR_ENCRYPTION_SECRET: ${MIMIR_ENCRYPTION_SECRET}
       MIMIR_INTERNAL_API_TOKEN: ${MIMIR_INTERNAL_API_TOKEN}
       GITHUB_TOKEN: ${GITHUB_TOKEN}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${MIMIR_DATABASE_URL}
+      ENCRYPTION_SECRET: ${MIMIR_ENCRYPTION_SECRET}
+      INTERNAL_API_TOKEN: ${MIMIR_INTERNAL_API_TOKEN}
     volumes:
       - /mnt/user/websites:/data/websites:rw
       - /mnt/user/appdata/claude:/config/home/.claude:ro
@@ -253,6 +257,12 @@ services:
       CALIFY_RESEND_API_KEY: ${CALIFY_RESEND_API_KEY}
       CALIFY_STRIPE_SECRET_KEY: ${CALIFY_STRIPE_SECRET_KEY}
       CALIFY_STRIPE_WEBHOOK_SECRET: ${CALIFY_STRIPE_WEBHOOK_SECRET}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${CALIFY_DATABASE_URL}
+      JWT_SECRET: ${CALIFY_JWT_SECRET}
+      RESEND_API_KEY: ${CALIFY_RESEND_API_KEY}
+      STRIPE_SECRET_KEY: ${CALIFY_STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${CALIFY_STRIPE_WEBHOOK_SECRET}
     depends_on:
       urd:
         condition: service_healthy
@@ -281,6 +291,10 @@ services:
       GRABLIST_DATABASE_URL: ${GRABLIST_DATABASE_URL}
       GRABLIST_JWT_SECRET: ${GRABLIST_JWT_SECRET}
       GRABLIST_RESEND_API_KEY: ${GRABLIST_RESEND_API_KEY}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${GRABLIST_DATABASE_URL}
+      JWT_SECRET: ${GRABLIST_JWT_SECRET}
+      RESEND_API_KEY: ${GRABLIST_RESEND_API_KEY}
     depends_on:
       urd:
         condition: service_healthy
@@ -310,6 +324,11 @@ services:
       NIGHTTALES_JWT_SECRET: ${NIGHTTALES_JWT_SECRET}
       NIGHTTALES_OPENAI_API_KEY: ${NIGHTTALES_OPENAI_API_KEY}
       NIGHTTALES_RESEND_API_KEY: ${NIGHTTALES_RESEND_API_KEY}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${NIGHTTALES_DATABASE_URL}
+      JWT_SECRET: ${NIGHTTALES_JWT_SECRET}
+      OPENAI_API_KEY: ${NIGHTTALES_OPENAI_API_KEY}
+      RESEND_API_KEY: ${NIGHTTALES_RESEND_API_KEY}
     depends_on:
       urd:
         condition: service_healthy
@@ -336,6 +355,8 @@ services:
       NODE_ENV: production
       PORT: 3000
       PLAYWRIGHT_DATABASE_URL: ${PLAYWRIGHT_DATABASE_URL}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${PLAYWRIGHT_DATABASE_URL}
     depends_on:
       urd:
         condition: service_healthy
@@ -365,6 +386,11 @@ services:
       SORRING3D_JWT_SECRET: ${SORRING3D_JWT_SECRET}
       SORRING3D_STRIPE_SECRET_KEY: ${SORRING3D_STRIPE_SECRET_KEY}
       SORRING3D_RESEND_API_KEY: ${SORRING3D_RESEND_API_KEY}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${SORRING3D_DATABASE_URL}
+      JWT_SECRET: ${SORRING3D_JWT_SECRET}
+      STRIPE_SECRET_KEY: ${SORRING3D_STRIPE_SECRET_KEY}
+      RESEND_API_KEY: ${SORRING3D_RESEND_API_KEY}
     volumes:
       - sorring3d-uploads:/app/uploads
     depends_on:
@@ -395,6 +421,9 @@ services:
       SORRINGUDLEJNING_DATABASE_URL: ${SORRINGUDLEJNING_DATABASE_URL}
       SORRINGUDLEJNING_JWT_SECRET: ${SORRINGUDLEJNING_JWT_SECRET}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${SORRINGUDLEJNING_DATABASE_URL}
+      JWT_SECRET: ${SORRINGUDLEJNING_JWT_SECRET}
     volumes:
       - sorring-udlejning-uploads:/app/uploads
     depends_on:
@@ -425,6 +454,9 @@ services:
       WODFORGE_DATABASE_URL: ${WODFORGE_DATABASE_URL}
       WODFORGE_JWT_SECRET: ${WODFORGE_JWT_SECRET}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${WODFORGE_DATABASE_URL}
+      JWT_SECRET: ${WODFORGE_JWT_SECRET}
     depends_on:
       urd:
         condition: service_healthy
@@ -452,6 +484,9 @@ services:
       PORT: 3000
       COS_DATABASE_URL: ${COS_DATABASE_URL}
       COS_JWT_SECRET: ${COS_JWT_SECRET}
+      # Legacy (remove after image rebuild)
+      DATABASE_URL: ${COS_DATABASE_URL}
+      JWT_SECRET: ${COS_JWT_SECRET}
     depends_on:
       urd:
         condition: service_healthy
