@@ -110,11 +110,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/mimir_db?sslmode=disable
+      MIMIR_DATABASE_URL: ${MIMIR_DATABASE_URL}
       CLAUDE_CONFIG_DIR: /config/home/.claude
       CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN}
-      ENCRYPTION_SECRET: ${MIMIR_ENCRYPTION_SECRET:-mimir-default-encryption-secret}
-      INTERNAL_API_TOKEN: ${MIMIR_INTERNAL_API_TOKEN:-mimir-internal-token}
+      MIMIR_ENCRYPTION_SECRET: ${MIMIR_ENCRYPTION_SECRET}
+      MIMIR_INTERNAL_API_TOKEN: ${MIMIR_INTERNAL_API_TOKEN}
       GITHUB_TOKEN: ${GITHUB_TOKEN}
     volumes:
       - /mnt/user/websites:/data/websites:rw
@@ -248,11 +248,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/calify_db?sslmode=disable
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
+      CALIFY_DATABASE_URL: ${CALIFY_DATABASE_URL}
+      CALIFY_JWT_SECRET: ${CALIFY_JWT_SECRET}
+      CALIFY_RESEND_API_KEY: ${CALIFY_RESEND_API_KEY}
+      CALIFY_STRIPE_SECRET_KEY: ${CALIFY_STRIPE_SECRET_KEY}
+      CALIFY_STRIPE_WEBHOOK_SECRET: ${CALIFY_STRIPE_WEBHOOK_SECRET}
     depends_on:
       urd:
         condition: service_healthy
@@ -278,9 +278,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/grablist_db?sslmode=disable
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
+      GRABLIST_DATABASE_URL: ${GRABLIST_DATABASE_URL}
+      GRABLIST_JWT_SECRET: ${GRABLIST_JWT_SECRET}
+      GRABLIST_RESEND_API_KEY: ${GRABLIST_RESEND_API_KEY}
     depends_on:
       urd:
         condition: service_healthy
@@ -306,10 +306,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/nighttales_db?sslmode=disable
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
+      NIGHTTALES_DATABASE_URL: ${NIGHTTALES_DATABASE_URL}
+      NIGHTTALES_JWT_SECRET: ${NIGHTTALES_JWT_SECRET}
+      NIGHTTALES_OPENAI_API_KEY: ${NIGHTTALES_OPENAI_API_KEY}
+      NIGHTTALES_RESEND_API_KEY: ${NIGHTTALES_RESEND_API_KEY}
     depends_on:
       urd:
         condition: service_healthy
@@ -335,7 +335,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/playwright_db?sslmode=disable
+      PLAYWRIGHT_DATABASE_URL: ${PLAYWRIGHT_DATABASE_URL}
     depends_on:
       urd:
         condition: service_healthy
@@ -361,10 +361,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/sorring3d_db?sslmode=disable
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
+      SORRING3D_DATABASE_URL: ${SORRING3D_DATABASE_URL}
+      SORRING3D_JWT_SECRET: ${SORRING3D_JWT_SECRET}
+      SORRING3D_STRIPE_SECRET_KEY: ${SORRING3D_STRIPE_SECRET_KEY}
+      SORRING3D_RESEND_API_KEY: ${SORRING3D_RESEND_API_KEY}
     volumes:
       - sorring3d-uploads:/app/uploads
     depends_on:
@@ -392,9 +392,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/sorring_udlejning_db?sslmode=disable
+      SORRINGUDLEJNING_DATABASE_URL: ${SORRINGUDLEJNING_DATABASE_URL}
+      SORRINGUDLEJNING_JWT_SECRET: ${SORRINGUDLEJNING_JWT_SECRET}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - sorring-udlejning-uploads:/app/uploads
     depends_on:
@@ -422,9 +422,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/wodforge_db?sslmode=disable
+      WODFORGE_DATABASE_URL: ${WODFORGE_DATABASE_URL}
+      WODFORGE_JWT_SECRET: ${WODFORGE_JWT_SECRET}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       urd:
         condition: service_healthy
@@ -450,8 +450,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/cos_db?sslmode=disable
-      JWT_SECRET: ${JWT_SECRET}
+      COS_DATABASE_URL: ${COS_DATABASE_URL}
+      COS_JWT_SECRET: ${COS_JWT_SECRET}
     depends_on:
       urd:
         condition: service_healthy
