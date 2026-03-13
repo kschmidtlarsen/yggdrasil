@@ -13,6 +13,13 @@
 #
 # Direct routing: Each app exposes its own port for Cloudflare Tunnel.
 # Managed via Portainer on Unraid (192.168.0.20)
+#
+# SECRET MANAGEMENT:
+# All secrets live in /mnt/user/appdata/claude/.env (single source of truth).
+# Each app container mounts this file as /app/.env:ro and loads it via dotenv.
+# No secrets in this compose file or in Portainer stack env vars.
+# Only infrastructure services (urd, pgadmin, umami, watchtower) use
+# Portainer stack env vars for compose-level interpolation.
 # ═══════════════════════════════════════════════════════════════════════════════
 
 networks:
@@ -110,17 +117,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      MIMIR_DATABASE_URL: ${MIMIR_DATABASE_URL}
       CLAUDE_CONFIG_DIR: /config/home/.claude
-      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN}
-      MIMIR_ENCRYPTION_SECRET: ${MIMIR_ENCRYPTION_SECRET}
-      MIMIR_INTERNAL_API_TOKEN: ${MIMIR_INTERNAL_API_TOKEN}
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${MIMIR_DATABASE_URL}
-      ENCRYPTION_SECRET: ${MIMIR_ENCRYPTION_SECRET}
-      INTERNAL_API_TOKEN: ${MIMIR_INTERNAL_API_TOKEN}
     volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
       - /mnt/user/websites:/data/websites:rw
       - /mnt/user/appdata/claude:/config/home/.claude:ro
     depends_on:
@@ -179,17 +178,14 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-urd}:${POSTGRES_PASSWORD}@urd:5432/eir_db?sslmode=disable
       URD_HOST: urd
       URD_PORT: 5432
-      URD_USER: ${POSTGRES_USER:-urd}
-      URD_PASSWORD: ${POSTGRES_PASSWORD}
       BACKUP_SCHEDULE: "0 3,15 * * *"
     volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
       - /mnt/user/backup/websites:/backups
       - sorring3d-uploads:/volumes/sorring3d:ro
       - sorring-udlejning-uploads:/volumes/sorring-udlejning:ro
-      - /mnt/user/appdata/claude/.env:/config/.env:ro
       - /mnt/user/websites/yggdrasil/docker-compose.yml:/config/docker-compose.yml:ro
     depends_on:
       urd:
@@ -207,7 +203,8 @@ services:
 
   # ─────────────────────────────────────────────────────────────────────────────
   # APPLICATION SERVICES (pre-built images from ghcr.io)
-  # Each app has its own port for direct Cloudflare Tunnel routing
+  # Each app mounts /mnt/user/appdata/claude/.env as /app/.env:ro
+  # and loads secrets via dotenv at startup. No secrets in compose.
   # ─────────────────────────────────────────────────────────────────────────────
 
   # Kanban Board - Project Management
@@ -221,12 +218,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      KANBAN_DATABASE_URL: ${KANBAN_DATABASE_URL}
-      KANBAN_JWT_SECRET: ${KANBAN_JWT_SECRET}
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
-      SONAR_TOKEN: ${SONAR_TOKEN}
-      WEBSOCKET_KEY: ${WEBSOCKET_KEY}
-      SONARQUBE_ORG: ${SONARQUBE_ORG:-kschmidtlarsen}
+    volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
     depends_on:
       urd:
         condition: service_healthy
@@ -252,17 +245,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      CALIFY_DATABASE_URL: ${CALIFY_DATABASE_URL}
-      CALIFY_JWT_SECRET: ${CALIFY_JWT_SECRET}
-      CALIFY_RESEND_API_KEY: ${CALIFY_RESEND_API_KEY}
-      CALIFY_STRIPE_SECRET_KEY: ${CALIFY_STRIPE_SECRET_KEY}
-      CALIFY_STRIPE_WEBHOOK_SECRET: ${CALIFY_STRIPE_WEBHOOK_SECRET}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${CALIFY_DATABASE_URL}
-      JWT_SECRET: ${CALIFY_JWT_SECRET}
-      RESEND_API_KEY: ${CALIFY_RESEND_API_KEY}
-      STRIPE_SECRET_KEY: ${CALIFY_STRIPE_SECRET_KEY}
-      STRIPE_WEBHOOK_SECRET: ${CALIFY_STRIPE_WEBHOOK_SECRET}
+    volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
     depends_on:
       urd:
         condition: service_healthy
@@ -288,13 +272,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      GRABLIST_DATABASE_URL: ${GRABLIST_DATABASE_URL}
-      GRABLIST_JWT_SECRET: ${GRABLIST_JWT_SECRET}
-      GRABLIST_RESEND_API_KEY: ${GRABLIST_RESEND_API_KEY}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${GRABLIST_DATABASE_URL}
-      JWT_SECRET: ${GRABLIST_JWT_SECRET}
-      RESEND_API_KEY: ${GRABLIST_RESEND_API_KEY}
+    volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
     depends_on:
       urd:
         condition: service_healthy
@@ -320,15 +299,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      NIGHTTALES_DATABASE_URL: ${NIGHTTALES_DATABASE_URL}
-      NIGHTTALES_JWT_SECRET: ${NIGHTTALES_JWT_SECRET}
-      NIGHTTALES_OPENAI_API_KEY: ${NIGHTTALES_OPENAI_API_KEY}
-      NIGHTTALES_RESEND_API_KEY: ${NIGHTTALES_RESEND_API_KEY}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${NIGHTTALES_DATABASE_URL}
-      JWT_SECRET: ${NIGHTTALES_JWT_SECRET}
-      OPENAI_API_KEY: ${NIGHTTALES_OPENAI_API_KEY}
-      RESEND_API_KEY: ${NIGHTTALES_RESEND_API_KEY}
+    volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
     depends_on:
       urd:
         condition: service_healthy
@@ -354,9 +326,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      PLAYWRIGHT_DATABASE_URL: ${PLAYWRIGHT_DATABASE_URL}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${PLAYWRIGHT_DATABASE_URL}
+    volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
     depends_on:
       urd:
         condition: service_healthy
@@ -382,16 +353,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      SORRING3D_DATABASE_URL: ${SORRING3D_DATABASE_URL}
-      SORRING3D_JWT_SECRET: ${SORRING3D_JWT_SECRET}
-      SORRING3D_STRIPE_SECRET_KEY: ${SORRING3D_STRIPE_SECRET_KEY}
-      SORRING3D_RESEND_API_KEY: ${SORRING3D_RESEND_API_KEY}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${SORRING3D_DATABASE_URL}
-      JWT_SECRET: ${SORRING3D_JWT_SECRET}
-      STRIPE_SECRET_KEY: ${SORRING3D_STRIPE_SECRET_KEY}
-      RESEND_API_KEY: ${SORRING3D_RESEND_API_KEY}
     volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
       - sorring3d-uploads:/app/uploads
     depends_on:
       urd:
@@ -418,13 +381,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      SORRINGUDLEJNING_DATABASE_URL: ${SORRINGUDLEJNING_DATABASE_URL}
-      SORRINGUDLEJNING_JWT_SECRET: ${SORRINGUDLEJNING_JWT_SECRET}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${SORRINGUDLEJNING_DATABASE_URL}
-      JWT_SECRET: ${SORRINGUDLEJNING_JWT_SECRET}
     volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
       - sorring-udlejning-uploads:/app/uploads
     depends_on:
       urd:
@@ -451,12 +409,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      WODFORGE_DATABASE_URL: ${WODFORGE_DATABASE_URL}
-      WODFORGE_JWT_SECRET: ${WODFORGE_JWT_SECRET}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${WODFORGE_DATABASE_URL}
-      JWT_SECRET: ${WODFORGE_JWT_SECRET}
+    volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
     depends_on:
       urd:
         condition: service_healthy
@@ -482,11 +436,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      COS_DATABASE_URL: ${COS_DATABASE_URL}
-      COS_JWT_SECRET: ${COS_JWT_SECRET}
-      # Legacy (remove after image rebuild)
-      DATABASE_URL: ${COS_DATABASE_URL}
-      JWT_SECRET: ${COS_JWT_SECRET}
+    volumes:
+      - /mnt/user/appdata/claude/.env:/app/.env:ro
     depends_on:
       urd:
         condition: service_healthy
